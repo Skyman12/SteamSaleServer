@@ -6,3 +6,6 @@ To make this work.
   * Move this entire folder to the www folder of the UwAMP
   * Set the php hosting setting in UwAMP to 8081
   * Start server
+  * 
+ 
+The SteamGames.json file was used for testing. It contains the list of all the steam games with their appids. The current server pulls directly from the http api.
