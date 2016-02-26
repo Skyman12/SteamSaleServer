@@ -35,7 +35,7 @@ function getSteamSaleInformation($appid) {
 }
 
 function getCurrentData() {
-	$result = 'http://localhost:8081/SteamSaleWatcherServer/gameList.json';
+	$result = 'http://localhost:8081/SteamSaleServer/gameList.json';
 	$d = curl_get_contents($result);
 	echo $d;
 }
