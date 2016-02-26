@@ -29,7 +29,6 @@ function putData($data) {
 }
 
 function buildSteamSaleInformation() {
-	echo "hi";
 	// Get all the games
 	$result = 'https://api.steampowered.com/ISteamApps/GetAppList/v2';
 	$d = curl_get_contents($result);
@@ -46,12 +45,12 @@ function buildSteamSaleInformation() {
 			$data = json_decode($d, true);
 			var_dump($data);
 			// Make sure the data and keys are fine
+			// Make sure the data and keys are fine
 			if ($data != null 
 			&& array_key_exists ( $map["appid"] , $data) 
 			&& array_key_exists ( "data" , $data[$map["appid"]])
 			&& array_key_exists ( "price_overview" , $data[$map["appid"]]["data"])) {
-				$discountPrice = $data[$map["appid"]]["data"]["price_overview"]["discount_percent"];
-				$steaminfo[$map["name"]] = $discountPrice;
+				$steaminfo[$map["name"]] = $data[$map["appid"]]["data"]["price_overview"];
 			}
 		} catch (Exception $e) {
 			
