@@ -3,35 +3,19 @@ header("Access-Control-Allow-Origin: *");
 if (isset($_REQUEST['action'])) {
 	session_start();
     switch ($_REQUEST['action']) {
-		case 'getSteamAppIDs':
-            getSteamAppIDs();
-            break;
-		case 'getSteamSaleInformation':
-			getSteamSaleInformation($_REQUEST['appid']);
-			break;
 		case 'getCurrentData':
 			getCurrentData();
 			break;
-		case 'putData':
-			putData($_REQUEST['data']);
-			break;
 		case 'buildSteamSaleInformation':
-			echo "here";
 			buildSteamSaleInformation();
 			break;
+		case 'addUser':
+			addUser($_REQUEST['username'], $_REQUEST['password'], $_REQUEST['email']);
+			break;
+		case 'getAllUsers':
+			getAllUsers();
+			break;
     }
-}
-
-function getSteamAppIDs() {
-	$result = 'https://api.steampowered.com/ISteamApps/GetAppList/v2';
-	$d = curl_get_contents($result);
-	echo $d;
-}
-
-function getSteamSaleInformation($appid) {
-	$result = 'http://store.steampowered.com/api/appdetails?appids=' . $appid . '&filters=price_overview';
-	$d = curl_get_contents($result);
-	echo $d;
 }
 
 function getCurrentData() {
@@ -75,8 +59,23 @@ function buildSteamSaleInformation() {
 	}
 		
 	putData(json_encode($steaminfo));
-	echo "Compled this ish";
-	echo true;
+}
+
+function addUser($username, $password, $email) {
+	$data = array();
+	$data = array('username' => $username, 'password' => $password, 'email' => $email);
+	$inp = file_get_contents('users.json');
+	$tempArray = json_decode($inp);
+	var_dump($data);
+	array_push($tempArray, $data);
+	$jsonData = json_encode($tempArray);
+	file_put_contents('users.json', $jsonData);
+}
+
+function getAllUsers() {
+	$result = 'http://localhost:8081/SteamSaleServer/users.json';
+	$d = curl_get_contents($result);
+	echo $d;
 }
 
 function curl_get_contents($url)
