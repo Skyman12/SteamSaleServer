@@ -15,6 +15,15 @@ if (isset($_REQUEST['action'])) {
 		case 'getAllUsers':
 			getAllUsers();
 			break;
+		case 'addGameToUser':
+			addGameToUser($_REQUEST['username'], $_REQUEST['gameName'], $_REQUEST['discountAmount']);
+			break;
+		case 'removeGameFromUser':
+			removeGameFromUser($_REQUEST['username'], $_REQUEST['gameName']);
+			break;
+		case 'getUser':
+			getUser($_REQUEST['username']);
+			break;
     }
 }
 
@@ -45,7 +54,6 @@ function buildSteamSaleInformation() {
 			$data = json_decode($d, true);
 			var_dump($data);
 			// Make sure the data and keys are fine
-			// Make sure the data and keys are fine
 			if ($data != null 
 			&& array_key_exists ( $map["appid"] , $data) 
 			&& array_key_exists ( "data" , $data[$map["appid"]])
@@ -61,20 +69,56 @@ function buildSteamSaleInformation() {
 }
 
 function addUser($username, $password, $email) {
-	$data = array();
-	$data = array('username' => $username, 'password' => $password, 'email' => $email);
 	$inp = file_get_contents('users.json');
-	$tempArray = json_decode($inp);
-	var_dump($data);
-	array_push($tempArray, $data);
-	$jsonData = json_encode($tempArray);
-	file_put_contents('users.json', $jsonData);
+	$tempArray = json_decode($inp, true);
+	
+	if ($tempArray == null || !array_key_exists($username, $tempArray))
+	{
+		$gameData = array();
+		$data = array('username' => $username, 'password' => $password,
+					  'email' => $email, 'gameList' => $gameData);
+		
+		var_dump($data);
+		$tempArray[$username] = $data;
+		$jsonData = json_encode($tempArray);
+		file_put_contents('users.json', $jsonData);
+		echo true;
+	}
+	echo false;
 }
 
 function getAllUsers() {
-	$result = 'http://localhost:8081/SteamSaleServer/users.json';
-	$d = curl_get_contents($result);
-	echo $d;
+	$inp = file_get_contents('users.json');
+	$tempArray = json_decode($inp, true);
+	echo json_encode($tempArray);
+}
+
+function getUser($username) {
+	$inp = file_get_contents('users.json');
+	$tempArray = json_decode($inp, true);
+	echo json_encode($tempArray[$username]);
+}
+
+function addGameToUser($username, $gameName, $discountAmount) {
+	$inp = file_get_contents('users.json');
+	$tempArray = json_decode($inp, true);
+	if (array_key_exists($username, $tempArray)) {
+		$tempArray[$username]["gameList"][$gameName] = $discountAmount;
+		$jsonData = json_encode($tempArray);
+		file_put_contents('users.json', $jsonData);
+	}
+}
+
+function removeGameFromUser($username, $gameName) {
+	$inp = file_get_contents('users.json');
+	$tempArray = json_decode($inp, true);
+	if (array_key_exists($username, $tempArray)) {
+		if (array_key_exists($gameName, $tempArray[$username]["gameList"])) {
+			unset($tempArray[$username]["gameList"][$gameName]);
+			$jsonData = json_encode($tempArray);
+			file_put_contents('users.json', $jsonData);
+		}
+	}
 }
 
 function curl_get_contents($url)
